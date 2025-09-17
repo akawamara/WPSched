@@ -1,0 +1,19 @@
+# Development files to exclude from WordPress.org distribution
+/.git
+/.gitignore
+/scripts
+/CONTRIBUTING.md
+/CHANGELOG.md
+/.distignore
+/composer.json
+/composer.lock
+/package.json
+/package-lock.json
+/node_modules
+/.editorconfig
+/.phpcs.xml
+/tests
+/.github
+/Gruntfile.js
+/gulpfile.js
+/webpack.config.js

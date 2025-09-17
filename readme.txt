@@ -96,14 +96,19 @@ Absolutely! The plugin is fully translation-ready with a complete .pot file incl
 
 == Changelog ==
 
-= 1.0.0 =
-* Initial release
-* Automatic speaker profile pages
-* Session and speaker management
-* Color customization system
-* Rate limiting and security features
-* Internationalization support
-* Mobile responsive design
+= 1.0.0 - 2024-09-17 =
+* **New:** Initial release of WPSched
+* **New:** Automatic speaker profile pages at `/speakers/username` URLs
+* **New:** Session and speaker management with Sched.com API integration
+* **New:** Color customization system for event types and subtypes
+* **New:** Rate limiting protection (25 calls per minute)
+* **New:** Security features with SQL injection protection
+* **New:** Mobile responsive design
+* **New:** Internationalization support with complete .pot file
+* **New:** Admin settings page with API configuration
+* **New:** Shortcodes for displaying sessions and speakers
+* **New:** Built-in pagination and filtering options
+* **New:** CSRF protection with nonce verification
 
 == Upgrade Notice ==
 
