@@ -93,7 +93,7 @@ class Sched_Activator {
         // Set default options
         add_option('sched_api_key', '');
         add_option('sched_conference_url', '');
-        add_option('sched_pagination_number', 30);
+        add_option('sched_pagination_number', 32);
         add_option('sched_last_sync', '');
         add_option('sched_last_sync_timestamp', 0);
         add_option('sched_auto_sync', 0);
