@@ -1,0 +1,137 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Sched Conference Plugin 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-16 12:00:00+00:00\n"
+"PO-Revision-Date: 2025-09-16 12:00:00+00:00\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: \n"
+"X-Generator: Manual\n"
+"Text-Domain: sched-conference-plugin\n"
+
+msgid "Sched Conference"
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "API Configuration"
+msgstr ""
+
+msgid "API Key"
+msgstr ""
+
+msgid "Conference URL"
+msgstr ""
+
+msgid "Pagination Number"
+msgstr ""
+
+msgid "Color Settings"
+msgstr ""
+
+msgid "Event Type Colors"
+msgstr ""
+
+msgid "Event Subtype Colors"
+msgstr ""
+
+msgid "Test Connection"
+msgstr ""
+
+msgid "Sync Data"
+msgstr ""
+
+msgid "Connection successful!"
+msgstr ""
+
+msgid "Permission denied"
+msgstr ""
+
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+msgid "Sync completed successfully!"
+msgstr ""
+
+msgid "Sessions"
+msgstr ""
+
+msgid "Speakers"
+msgstr ""
+
+msgid "Featured Speakers"
+msgstr ""
+
+msgid "All Speakers"
+msgstr ""
+
+msgid "Filter by Type"
+msgstr ""
+
+msgid "All Events"
+msgstr ""
+
+msgid "All Session Types"
+msgstr ""
+
+msgid "All Dates"
+msgstr ""
+
+msgid "Clear All Filters"
+msgstr ""
+
+msgid "Session Track"
+msgstr ""
+
+msgid "Session Type"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Featured"
+msgstr ""
+
+msgid "Load More"
+msgstr ""
+
+msgid "No sessions found"
+msgstr ""
+
+msgid "No speakers found"
+msgstr ""
+
+msgid "Additional speakers will be added soon."
+msgstr ""
+
+msgid "Session Details"
+msgstr ""
+
+msgid "Speaker Details"
+msgstr ""
+
+msgid "View Session"
+msgstr ""
+
+msgid "View Speaker"
+msgstr ""
+
+msgid "Back to Speakers"
+msgstr ""
+
+msgid "Back to Conference"
+msgstr ""
+
+msgid "Error fetching data from Sched."
+msgstr ""
+
+msgid "Settings saved."
+msgstr ""
+
+msgid "Settings not saved."
+msgstr ""
+
+msgid "API rate limit reached"
+msgstr ""

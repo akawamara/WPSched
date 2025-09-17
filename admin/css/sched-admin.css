@@ -1,0 +1,170 @@
+/* Sched Conference Plugin Admin Styles */
+
+.wrap h1 {
+    margin-bottom: 20px;
+}
+
+.sched-settings-section {
+    margin-top: 30px;
+}
+
+.sched-settings-section h2 {
+    border-bottom: 1px solid #ccd0d4;
+    padding-bottom: 5px;
+}
+
+.form-table th {
+    width: 200px;
+}
+
+.regular-text {
+    width: 400px;
+}
+
+.description {
+    font-style: italic;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Sync section */
+#sync-status {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+    display: none;
+}
+
+#sync-status.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+#sync-status.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+#sync-status.loading {
+    background-color: #e2e3e5;
+    color: #383d41;
+    border: 1px solid #d1d3d4;
+}
+
+.button-group {
+    margin: 10px 0;
+}
+
+.button-group .button {
+    margin-right: 10px;
+}
+
+/* Shortcode documentation */
+.shortcode-docs {
+    background: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.shortcode-docs h3 {
+    margin-top: 0;
+}
+
+.shortcode-docs code {
+    background: #fff;
+    padding: 2px 4px;
+    border-radius: 2px;
+    border: 1px solid #ddd;
+}
+
+.shortcode-docs ul {
+    margin-left: 20px;
+}
+
+.shortcode-docs li {
+    margin-bottom: 5px;
+}
+
+/* Color Settings */
+.sched-color-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.color-setting-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #f9f9f9;
+}
+
+.color-setting-row label {
+    min-width: 150px;
+    font-weight: 600;
+    color: #333;
+}
+
+.color-picker {
+    width: 60px;
+    height: 40px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.color-text {
+    width: 80px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: monospace;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+.color-preview {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.color-setting-row .description {
+    margin: 0;
+    font-style: italic;
+    color: #666;
+    font-size: 13px;
+}
+
+#sched_event_colors,
+#sched_subtype_colors {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.sched-color-instructions {
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 0 4px 4px 0;
+}
+
+.sched-color-instructions h4 {
+    margin-top: 0;
+    color: #1976d2;
+}
