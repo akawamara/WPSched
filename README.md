@@ -16,7 +16,7 @@ A WordPress plugin that integrates with Sched.com to display conference sessions
 
 ### Sessions
 ```php
-[sched_sessions limit="30" pagination="true" show_filter="true"]
+[sched_sessions limit="32" pagination="true" show_filter="true"]
 ```
 Displays conference sessions with filtering and pagination options.
 
