@@ -66,7 +66,7 @@ if (!$speaker) {
                             
                             <div class="session-meta">
                                 <?php if (!empty($session->event_type)): ?>
-                                    <span class="session-type-badge" style="background-color: <?php echo $plugin_instance->get_event_type_color($session->event_type); ?>">
+                                    <span class="session-type-badge" style="background-color: <?php echo esc_attr($plugin_instance->get_event_type_color($session->event_type)); ?>">
                                         <?php echo esc_html($session->event_type); ?>
                                     </span>
                                 <?php endif; ?>

@@ -10,7 +10,7 @@
  */
 
 if (!isset($featured_speakers) && !isset($regular_speakers)) {
-    echo $plugin_instance->load_template('sched-no-speakers');
+    echo wp_kses_post($plugin_instance->load_template('sched-no-speakers'));
     return;
 }
 ?>
@@ -28,10 +28,10 @@ if (!isset($featured_speakers) && !isset($regular_speakers)) {
             </div>
             <div class="sched-featured-speakers">
                 <?php foreach ($featured_speakers as $speaker): ?>
-                    <?php echo $plugin_instance->load_template('sched-speaker-card', array(
+                    <?php echo wp_kses_post($plugin_instance->load_template('sched-speaker-card', array(
                         'speaker' => $speaker,
                         'is_featured' => true
-                    )); ?>
+                    ))); ?>
                 <?php endforeach; ?>
             </div>
         </div>
@@ -53,10 +53,10 @@ if (!isset($featured_speakers) && !isset($regular_speakers)) {
             <?php if (!empty($regular_speakers)): ?>
             <div class="sched-all-speakers">
                 <?php foreach ($regular_speakers as $speaker): ?>
-                    <?php echo $plugin_instance->load_template('sched-speaker-card', array(
+                    <?php echo wp_kses_post($plugin_instance->load_template('sched-speaker-card', array(
                         'speaker' => $speaker,
                         'is_featured' => false
-                    )); ?>
+                    ))); ?>
                 <?php endforeach; ?>
             </div>
             <?php elseif ($current_page == 1 && !empty($featured_speakers)): ?>
@@ -68,11 +68,11 @@ if (!isset($featured_speakers) && !isset($regular_speakers)) {
         </div>
         
         <?php if ($show_pagination && !empty($pagination_data) && $pagination_data['total_pages'] > 1): ?>
-            <?php echo $plugin_instance->load_template('sched-speakers-pagination', $pagination_data); ?>
+            <?php echo wp_kses_post($plugin_instance->load_template('sched-speakers-pagination', $pagination_data)); ?>
         <?php endif; ?>
         
         <?php else: ?>
-            <?php echo $plugin_instance->load_template('sched-no-speakers'); ?>
+            <?php echo wp_kses_post($plugin_instance->load_template('sched-no-speakers')); ?>
         <?php endif; ?>
         
     </div>

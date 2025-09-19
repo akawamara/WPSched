@@ -22,7 +22,7 @@ if (!isset($session)) {
         </div>
 
         <?php if ($session->event_type): ?>
-            <div class="session-type-badge" style="background-color: <?php echo $event_color; ?>">
+            <div class="session-type-badge" style="background-color: <?php echo esc_attr($event_color); ?>">
                 <?php echo esc_html($session->event_type); ?>
             </div>
         <?php endif; ?>
@@ -33,7 +33,7 @@ if (!isset($session)) {
     </div>
 
     <!-- Session title -->
-    <div class="sched-session-header" style="border-left: 4px solid <?php echo $event_color; ?>">
+    <div class="sched-session-header" style="border-left: 4px solid <?php echo esc_attr($event_color); ?>">
         <h4 class="session-title"><?php echo esc_html($session->event_name); ?></h4>
     </div>
 

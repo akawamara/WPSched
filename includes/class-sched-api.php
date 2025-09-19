@@ -30,7 +30,7 @@ class Sched_API {
         
         if ($this->conference_url) {
             // Extract subdomain from URL like https://gijc25.sched.com
-            $parsed = parse_url($this->conference_url);
+            $parsed = wp_parse_url($this->conference_url);
             $host_parts = explode('.', $parsed['host']);
             $subdomain = $host_parts[0];
             $this->base_url = "https://{$subdomain}.sched.com/api";
@@ -146,21 +146,21 @@ class Sched_API {
     private function clear_all_tables() {
         global $wpdb;
         
-        $sessions_table = $wpdb->prefix . 'sched_sessions';
-        $speakers_table = $wpdb->prefix . 'sched_speakers';
-        $sessions_speakers_table = $wpdb->prefix . 'sched_sessions_speakers';
+        $sessions_table = esc_sql($wpdb->prefix . 'sched_sessions');
+        $speakers_table = esc_sql($wpdb->prefix . 'sched_speakers');
+        $sessions_speakers_table = esc_sql($wpdb->prefix . 'sched_sessions_speakers');
         
         // Only truncate if tables exist
-        if ($wpdb->get_var("SHOW TABLES LIKE '$sessions_table'") == $sessions_table) {
-            $wpdb->query("TRUNCATE TABLE `$sessions_table`");
+        if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $wpdb->prefix . 'sched_sessions')) == $wpdb->prefix . 'sched_sessions') {
+            $wpdb->query($wpdb->prepare("DELETE FROM {$sessions_table}"));
         }
         
-        if ($wpdb->get_var("SHOW TABLES LIKE '$speakers_table'") == $speakers_table) {
-            $wpdb->query("TRUNCATE TABLE `$speakers_table`");
+        if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $wpdb->prefix . 'sched_speakers')) == $wpdb->prefix . 'sched_speakers') {
+            $wpdb->query($wpdb->prepare("DELETE FROM {$speakers_table}"));
         }
         
-        if ($wpdb->get_var("SHOW TABLES LIKE '$sessions_speakers_table'") == $sessions_speakers_table) {
-            $wpdb->query("TRUNCATE TABLE `$sessions_speakers_table`");
+        if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $wpdb->prefix . 'sched_sessions_speakers')) == $wpdb->prefix . 'sched_sessions_speakers') {
+            $wpdb->query($wpdb->prepare("DELETE FROM {$sessions_speakers_table}"));
         }
     }
 
@@ -252,8 +252,9 @@ class Sched_API {
         $sessions_speakers_table_name = $wpdb->prefix . 'sched_sessions_speakers';
 
         // Create sessions table or truncate if exists
-        if($wpdb->get_var("SHOW TABLES LIKE '$sessions_table_name'") != $sessions_table_name) {
-            $sessions_sql = "CREATE TABLE $sessions_table_name (
+        if($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $sessions_table_name)) != $sessions_table_name) {
+            $sessions_table_escaped = esc_sql($sessions_table_name);
+            $sessions_sql = "CREATE TABLE {$sessions_table_escaped} (
                 id mediumint(9) NOT NULL AUTO_INCREMENT,
                 event_key varchar(255) NULL,
                 event_active varchar(255) NULL,
@@ -295,12 +296,14 @@ class Sched_API {
             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
             dbDelta($sessions_sql);
         } else {
-            $wpdb->query("TRUNCATE TABLE `$sessions_table_name`");
+            $sessions_table_escaped = esc_sql($sessions_table_name);
+            $wpdb->query($wpdb->prepare("DELETE FROM {$sessions_table_escaped}"));
         }
 
         // Create speakers table or truncate if exists
-        if($wpdb->get_var("SHOW TABLES LIKE '$speakers_table_name'") != $speakers_table_name) {
-            $speakers_sql = "CREATE TABLE $speakers_table_name (
+        if($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $speakers_table_name)) != $speakers_table_name) {
+            $speakers_table_escaped = esc_sql($speakers_table_name);
+            $speakers_sql = "CREATE TABLE {$speakers_table_escaped} (
                 id mediumint(9) NOT NULL AUTO_INCREMENT,
                 customorder varchar(255) NULL,
                 username varchar(255) NOT NULL,
@@ -317,12 +320,14 @@ class Sched_API {
             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
             dbDelta($speakers_sql);
         } else {
-            $wpdb->query("TRUNCATE TABLE `$speakers_table_name`");
+            $speakers_table_escaped = esc_sql($speakers_table_name);
+            $wpdb->query($wpdb->prepare("DELETE FROM {$speakers_table_escaped}"));
         }
 
         // Create sessions-speakers pivot table or truncate if exists
-        if($wpdb->get_var("SHOW TABLES LIKE '$sessions_speakers_table_name'") != $sessions_speakers_table_name) {
-            $sessions_speakers_sql = "CREATE TABLE $sessions_speakers_table_name (
+        if($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $sessions_speakers_table_name)) != $sessions_speakers_table_name) {
+            $sessions_speakers_table_escaped = esc_sql($sessions_speakers_table_name);
+            $sessions_speakers_sql = "CREATE TABLE {$sessions_speakers_table_escaped} (
                 id mediumint(9) NOT NULL AUTO_INCREMENT,
                 session_id varchar(255) NOT NULL,
                 speaker_username varchar(255) NOT NULL,
@@ -332,7 +337,8 @@ class Sched_API {
             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
             dbDelta($sessions_speakers_sql);
         } else {
-            $wpdb->query("TRUNCATE TABLE `$sessions_speakers_table_name`");
+            $sessions_speakers_table_escaped = esc_sql($sessions_speakers_table_name);
+            $wpdb->query($wpdb->prepare("DELETE FROM {$sessions_speakers_table_escaped}"));
         }
     }
 
@@ -591,9 +597,11 @@ class Sched_API {
      */
     private function check_user_exists($username) {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'sched_speakers';
-        $query = "SELECT * FROM $table_name WHERE username = %s";
-        $results = $wpdb->get_results($wpdb->prepare($query, $username));
+        $table_name = esc_sql($wpdb->prefix . 'sched_speakers');
+        $results = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$table_name} WHERE username = %s",
+            $username
+        ));
         return !empty($results);
     }
 

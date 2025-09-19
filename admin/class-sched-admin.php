@@ -50,12 +50,24 @@ class Sched_Admin {
      * Register settings.
      */
     public function register_settings() {
-        register_setting('sched_settings_group', 'sched_api_key');
-        register_setting('sched_settings_group', 'sched_conference_url');
-        register_setting('sched_settings_group', 'sched_pagination_number');
-        register_setting('sched_settings_group', 'sched_auto_sync');
-        register_setting('sched_settings_group', 'sched_sync_interval');
-        register_setting('sched_settings_group', 'sched_cleanup_on_delete');
+        register_setting('sched_settings_group', 'sched_api_key', array(
+            'sanitize_callback' => 'sanitize_text_field'
+        ));
+        register_setting('sched_settings_group', 'sched_conference_url', array(
+            'sanitize_callback' => 'esc_url_raw'
+        ));
+        register_setting('sched_settings_group', 'sched_pagination_number', array(
+            'sanitize_callback' => array($this, 'sanitize_pagination_number')
+        ));
+        register_setting('sched_settings_group', 'sched_auto_sync', array(
+            'sanitize_callback' => array($this, 'sanitize_checkbox')
+        ));
+        register_setting('sched_settings_group', 'sched_sync_interval', array(
+            'sanitize_callback' => array($this, 'sanitize_sync_interval')
+        ));
+        register_setting('sched_settings_group', 'sched_cleanup_on_delete', array(
+            'sanitize_callback' => array($this, 'sanitize_checkbox')
+        ));
 
         // Register color settings dynamically
         $this->register_color_settings();
@@ -165,7 +177,7 @@ class Sched_Admin {
             <button type="button" id="test-connection" class="button">Test Connection</button>
             <button type="button" id="sync-data" class="button button-primary">Sync Data Now</button>
             
-            <p><strong>Last Sync:</strong> <?php echo get_option('sched_last_sync', 'Never'); ?></p>
+            <p><strong>Last Sync:</strong> <?php echo esc_html(get_option('sched_last_sync', 'Never')); ?></p>
             
             <hr>
             
@@ -256,7 +268,7 @@ class Sched_Admin {
         check_ajax_referer('sched_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
-            wp_die(__('You do not have sufficient permissions to access this page.', 'sched-conference-plugin'));
+            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'wpsched'));
         }
 
         $api = new Sched_API();
@@ -265,7 +277,7 @@ class Sched_Admin {
         if (is_wp_error($result)) {
             wp_send_json_error($result->get_error_message());
         } else {
-            wp_send_json_success(__('Connection successful!', 'sched-conference-plugin'));
+            wp_send_json_success(esc_html__('Connection successful!', 'wpsched'));
         }
     }
 
@@ -276,7 +288,7 @@ class Sched_Admin {
         check_ajax_referer('sched_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
-            wp_die('Permission denied');
+            wp_die(esc_html__('Permission denied', 'wpsched'));
         }
 
         $api = new Sched_API();
@@ -296,7 +308,7 @@ class Sched_Admin {
         check_ajax_referer('sched_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
-            wp_die('Permission denied');
+            wp_die(esc_html__('Permission denied', 'wpsched'));
         }
 
         $api = new Sched_API();
@@ -345,13 +357,17 @@ class Sched_Admin {
         // Register settings for each event type
         foreach ($event_types as $type) {
             $setting_name = 'sched_color_type_' . sanitize_key($type);
-            register_setting('sched_settings_group', $setting_name);
+            register_setting('sched_settings_group', $setting_name, array(
+                'sanitize_callback' => array($this, 'sanitize_color')
+            ));
         }
 
         // Register settings for each event subtype
         foreach ($event_subtypes as $subtype) {
             $setting_name = 'sched_color_subtype_' . sanitize_key($subtype);
-            register_setting('sched_settings_group', $setting_name);
+            register_setting('sched_settings_group', $setting_name, array(
+                'sanitize_callback' => array($this, 'sanitize_color')
+            ));
         }
     }
 
@@ -410,5 +426,40 @@ class Sched_Admin {
             echo '</div>';
         }
         echo '</div>';
+    }
+
+    /**
+     * Sanitization callback for pagination number
+     */
+    public function sanitize_pagination_number($input) {
+        $sanitized = absint($input);
+        return max(1, min(100, $sanitized)); // Ensure between 1 and 100
+    }
+
+    /**
+     * Sanitization callback for checkbox values
+     */
+    public function sanitize_checkbox($input) {
+        return !empty($input) ? 1 : 0;
+    }
+
+    /**
+     * Sanitization callback for sync interval
+     */
+    public function sanitize_sync_interval($input) {
+        $allowed_intervals = array('hourly', 'twicedaily', 'daily');
+        return in_array($input, $allowed_intervals, true) ? $input : 'hourly';
+    }
+
+    /**
+     * Sanitization callback for color values
+     */
+    public function sanitize_color($input) {
+        // Validate hex color format
+        if (preg_match('/^#[a-f0-9]{6}$/i', $input)) {
+            return $input;
+        }
+        // Return default color if invalid
+        return '#333333';
     }
 }

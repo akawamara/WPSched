@@ -94,11 +94,19 @@ jQuery(document).ready(function($) {
                     dateFilter.value = '';
                 }
                 
-                // Clear URL parameters and reload
+                // Clear URL parameters and reload with nonce
                 const url = new URL(window.location);
                 url.searchParams.delete('event_type');
                 url.searchParams.delete('session_type');
                 url.searchParams.delete('date');
+                
+                // Add nonce for security
+                if (typeof sched_public !== 'undefined' && sched_public.filter_nonce) {
+                    url.searchParams.set('_wpnonce', sched_public.filter_nonce);
+                } else {
+                    url.searchParams.delete('_wpnonce');
+                }
+                
                 window.location.href = url.toString();
             });
         }
@@ -127,7 +135,7 @@ jQuery(document).ready(function($) {
             }
         }
         
-        // Helper function to update URL and reload
+        // Helper function to update URL and reload with nonce
         function updateURLAndReload(param, value) {
             const url = new URL(window.location);
             
@@ -135,6 +143,11 @@ jQuery(document).ready(function($) {
                 url.searchParams.set(param, value);
             } else {
                 url.searchParams.delete(param);
+            }
+            
+            // Add nonce for security
+            if (typeof sched_public !== 'undefined' && sched_public.filter_nonce) {
+                url.searchParams.set('_wpnonce', sched_public.filter_nonce);
             }
             
             window.location.href = url.toString();
@@ -154,69 +167,6 @@ jQuery(document).ready(function($) {
                 }
             }
         });
-    }
-
-    // Event type dropdown filter handling (legacy support)
-    function initializeEventTypeDropdown() {
-        const dropdown = document.getElementById('event-type-filter');
-        if (!dropdown) return;
-        
-        dropdown.addEventListener('change', function() {
-            const selectedType = this.value;
-            
-            // Update URL without page reload
-            if (history.replaceState) {
-                const url = new URL(window.location);
-                if (selectedType) {
-                    url.searchParams.set('event_type', selectedType);
-                } else {
-                    url.searchParams.delete('event_type');
-                }
-                window.location.href = url.toString();
-            } else {
-                // Fallback for older browsers
-                window.location.href = updateURLParameter(window.location.href, 'event_type', selectedType);
-            }
-        });
-    }
-    
-    // Helper function to update URL parameters
-    function updateURLParameter(url, param, paramVal) {
-        var TheAnchor = null;
-        var newAdditionalURL = "";
-        var tempArray = url.split("?");
-        var baseURL = tempArray[0];
-        var additionalURL = tempArray[1];
-        var temp = "";
-
-        if (additionalURL) {
-            var tmpAnchor = additionalURL.split("#");
-            var TheParams = tmpAnchor[0];
-            TheAnchor = tmpAnchor[1];
-            if (TheAnchor)
-                additionalURL = TheParams;
-
-            tempArray = additionalURL.split("&");
-
-            for (i = 0; i < tempArray.length; i++) {
-                if (tempArray[i].split('=')[0] != param) {
-                    newAdditionalURL += temp + tempArray[i];
-                    temp = "&";
-                }
-            }
-        } else {
-            TheAnchor = url.split("#")[1];
-        }
-
-        if (paramVal) {
-            newAdditionalURL += temp + param + "=" + paramVal;
-        }
-
-        var rows_txt = temp + "" + TheAnchor;
-        if (TheAnchor)
-            rows_txt = "#" + TheAnchor;
-
-        return baseURL + "?" + newAdditionalURL + rows_txt;
     }
 
     // Event type filtering with smooth animations
@@ -249,6 +199,12 @@ jQuery(document).ready(function($) {
             } else {
                 url.searchParams.delete('event_type');
             }
+            
+            // Add nonce for security when updating filter state
+            if (typeof sched_public !== 'undefined' && sched_public.filter_nonce) {
+                url.searchParams.set('_wpnonce', sched_public.filter_nonce);
+            }
+            
             history.replaceState(null, null, url);
         }
     }
@@ -335,23 +291,23 @@ jQuery(document).ready(function($) {
             // Wait for filter interface to be created
             setTimeout(() => {
                 if (eventType) {
-                    const eventFilterBtn = document.querySelector(`#event-type-filter option[value="${eventType}"]`);
-                    if (eventFilterBtn) {
-                        document.getElementById('event-type-filter').value = eventType;
+                    const eventFilterSelect = document.getElementById('event-type-filter');
+                    if (eventFilterSelect) {
+                        eventFilterSelect.value = eventType;
                     }
                 }
                 
                 if (sessionType) {
-                    const sessionFilterBtn = document.querySelector(`#session-type-filter option[value="${sessionType}"]`);
-                    if (sessionFilterBtn) {
-                        document.getElementById('session-type-filter').value = sessionType;
+                    const sessionFilterSelect = document.getElementById('session-type-filter');
+                    if (sessionFilterSelect) {
+                        sessionFilterSelect.value = sessionType;
                     }
                 }
                 
                 if (selectedDate) {
-                    const dateFilterBtn = document.querySelector(`#date-filter option[value="${selectedDate}"]`);
-                    if (dateFilterBtn) {
-                        document.getElementById('date-filter').value = selectedDate;
+                    const dateFilterSelect = document.getElementById('date-filter');
+                    if (dateFilterSelect) {
+                        dateFilterSelect.value = selectedDate;
                     }
                 }
                 
@@ -381,7 +337,6 @@ jQuery(document).ready(function($) {
     function initializeModernSched() {
         initializeCardAnimations();
         initializeAdvancedFilter();
-        initializeEventTypeDropdown();
         initializeSpeakerChips();
         initializeSessionCardClicks();
         handleResponsiveFeatures();

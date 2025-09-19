@@ -20,7 +20,8 @@ class Sched_Activator {
         $charset_collate = $wpdb->get_charset_collate();
         
         // Sessions table based on wp-sched.php schema
-        $sql_sessions = "CREATE TABLE $table_sessions (
+        $table_sessions_escaped = esc_sql($table_sessions);
+        $sql_sessions = "CREATE TABLE {$table_sessions_escaped} (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             event_key varchar(255) NULL,
             event_active varchar(255) NULL,
@@ -61,7 +62,8 @@ class Sched_Activator {
         ) $charset_collate;";
         
         // Speakers table based on wp-sched.php schema
-        $sql_speakers = "CREATE TABLE $table_speakers (
+        $table_speakers_escaped = esc_sql($table_speakers);
+        $sql_speakers = "CREATE TABLE {$table_speakers_escaped} (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             customorder varchar(255) NULL,
             username varchar(255) NOT NULL,
@@ -77,7 +79,8 @@ class Sched_Activator {
         ) $charset_collate;";
         
         // Sessions-Speakers pivot table
-        $sql_sessions_speakers = "CREATE TABLE $table_sessions_speakers (
+        $table_sessions_speakers_escaped = esc_sql($table_sessions_speakers);
+        $sql_sessions_speakers = "CREATE TABLE {$table_sessions_speakers_escaped} (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             session_id varchar(255) NOT NULL,
             speaker_username varchar(255) NOT NULL,
@@ -176,8 +179,12 @@ class Sched_Activator {
         $color_options = array();
         
         // Get all options that start with 'sched_color_'
+        $options_table = esc_sql($wpdb->options);
         $results = $wpdb->get_col(
-            "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'sched_color_%'"
+            $wpdb->prepare(
+                "SELECT option_name FROM {$options_table} WHERE option_name LIKE %s",
+                'sched_color_%'
+            )
         );
         
         if ($results) {

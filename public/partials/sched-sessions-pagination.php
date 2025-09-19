@@ -20,13 +20,13 @@ if ($total_pages <= 1) {
 
 <div class="sched-pagination-modern">
     <?php
-    echo paginate_links(array(
+    echo wp_kses_post(paginate_links(array(
         'base' => add_query_arg('paged','%#%'),
         'format' => '',
-        'prev_text' => __('&laquo;'),
-        'next_text' => __('&raquo;'),
+        'prev_text' => esc_html__('&laquo;', 'wpsched'),
+        'next_text' => esc_html__('&raquo;', 'wpsched'),
         'total' => $total_pages,
         'current' => $current_page
-    ));
+    )));
     ?>
 </div>

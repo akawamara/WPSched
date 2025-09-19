@@ -17,7 +17,18 @@ if (!isset($sessions)) {
 <div class="sched-modern-container">
     <div class="sched-header">
         <?php if ($show_filter && !empty($filter_data)): ?>
-            <?php echo $plugin_instance->load_template('sched-sessions-filter', $filter_data); ?>
+            <?php 
+            // Define allowed HTML for form elements
+            $allowed_html = array(
+                'div' => array('class' => array(), 'id' => array()),
+                'button' => array('class' => array(), 'id' => array(), 'type' => array()),
+                'select' => array('class' => array(), 'id' => array(), 'name' => array()),
+                'option' => array('value' => array(), 'selected' => array()),
+                'label' => array('class' => array(), 'for' => array()),
+                'span' => array('class' => array(), 'id' => array(), 'style' => array())
+            );
+            echo wp_kses($plugin_instance->load_template('sched-sessions-filter', $filter_data), $allowed_html); 
+            ?>
         <?php endif; ?>
     </div>
     
@@ -51,11 +62,11 @@ if (!isset($sessions)) {
                 
                 <?php 
                 // Include individual session card
-                echo $plugin_instance->load_template('sched-session-card', array(
+                echo wp_kses_post($plugin_instance->load_template('sched-session-card', array(
                     'session' => $session,
                     'speakers' => $speakers,
                     'event_color' => $event_color
-                ));
+                )));
                 ?>
             <?php endforeach; ?>
             
@@ -65,11 +76,11 @@ if (!isset($sessions)) {
             <?php endif; ?>
             
             <?php if ($show_pagination && !empty($pagination_data)): ?>
-                <?php echo $plugin_instance->load_template('sched-sessions-pagination', $pagination_data); ?>
+                <?php echo wp_kses_post($plugin_instance->load_template('sched-sessions-pagination', $pagination_data)); ?>
             <?php endif; ?>
             
         <?php else: ?>
-            <?php echo $plugin_instance->load_template('sched-no-sessions'); ?>
+            <?php echo wp_kses_post($plugin_instance->load_template('sched-no-sessions')); ?>
         <?php endif; ?>
     </div>
 </div>

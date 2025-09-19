@@ -10,6 +10,11 @@
  * @var string $selected_date
  */
 
+// Check if variables exist
+if (!isset($event_types)) $event_types = array();
+if (!isset($session_types)) $session_types = array();
+if (!isset($event_dates)) $event_dates = array();
+
 if (empty($event_types) && empty($session_types) && empty($event_dates)) {
     return;
 }
@@ -26,7 +31,7 @@ if (!empty($selected_date)) $active_filters++;
         <div class="filter-left">
             <span class="filter-icon">🔍</span>
             <span class="filter-text">Filters</span>
-            <span class="filter-badge" id="filter-active-badge"<?php echo ($active_filters == 0 ? ' style="display:none;"' : ''); ?>><?php echo $active_filters; ?></span>
+            <span class="filter-badge" id="filter-active-badge"<?php echo ($active_filters == 0 ? ' style="display:none;"' : ''); ?>><?php echo esc_html($active_filters); ?></span>
         </div>
         <span class="toggle-arrow">▼</span>
     </button>
@@ -38,7 +43,7 @@ if (!empty($selected_date)) $active_filters++;
             <?php if (!empty($event_types)): ?>
             <!-- Event Type Filter -->
             <div class="filter-group">
-                <label class="filter-group-label">Event Type</label>
+                <label class="filter-group-label">Session Type</label>
                 <select id="event-type-filter" class="filter-select">
                     <option value="">All Events</option>
                     <?php foreach ($event_types as $type): ?>
@@ -72,7 +77,7 @@ if (!empty($selected_date)) $active_filters++;
                         $display_text = $date_obj->event_start_weekday . ', ' . $date_obj->event_start_month . ' ' . $date_obj->event_start_day;
                         $selected = ($selected_date === $date_obj->event_start_date) ? ' selected' : '';
                         ?>
-                        <option value="<?php echo esc_attr($date_obj->event_start_date); ?>"<?php echo $selected; ?>><?php echo esc_html($display_text); ?></option>
+                        <option value="<?php echo esc_attr($date_obj->event_start_date); ?>"<?php echo esc_attr($selected); ?>><?php echo esc_html($display_text); ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>

@@ -33,18 +33,8 @@ class Sched {
      * Define the locale for this plugin for internationalization.
      */
     private function set_locale() {
-        $this->loader->add_action('plugins_loaded', $this, 'load_plugin_textdomain');
-    }
-
-    /**
-     * Load the plugin text domain for translation.
-     */
-    public function load_plugin_textdomain() {
-        load_plugin_textdomain(
-            'sched-conference-plugin',
-            false,
-            dirname(plugin_basename(__FILE__)) . '/../languages/'
-        );
+        // WordPress automatically loads translations for plugins hosted on WordPress.org
+        // No need to manually call load_plugin_textdomain() since WordPress 4.6
     }
 
     /**

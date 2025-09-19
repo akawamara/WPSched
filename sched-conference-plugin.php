@@ -6,12 +6,11 @@
  * Author: Alan Kawamara
  * License: GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: sched-conference-plugin
+ * Text Domain: wpsched
  * Domain Path: /languages
  * Requires at least: 6.0
  * Tested up to: 6.8.2
  * Requires PHP: 7.4
- * Network: false
  */
 
 // If this file is called directly, abort.
@@ -50,7 +49,7 @@ add_action( 'plugins_loaded', 'run_sched_conference_plugin' );
 add_filter( 'plugin_action_links_' . SCHED_PLUGIN_BASENAME, 'sched_add_settings_link' );
 
 function sched_add_settings_link( $links ) {
-    $settings_link = '<a href="' . admin_url( 'options-general.php?page=sched-conference-plugin' ) . '">' . __( 'Settings' ) . '</a>';
+    $settings_link = '<a href="' . admin_url( 'options-general.php?page=sched-conference-plugin' ) . '">' . __( 'Settings', 'wpsched' ) . '</a>';
     array_unshift( $links, $settings_link );
     return $links;
 }

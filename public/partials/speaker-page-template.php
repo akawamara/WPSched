@@ -103,10 +103,10 @@ $site_description = get_bloginfo('description');
             <?php
             // Use the single speaker shortcode to render the profile
             $public_class = new Sched_Public('sched-conference-plugin', '1.0.0');
-            echo $public_class->display_single_speaker(array(
-                'username' => $speaker_username,
-                'back_url' => site_url('/speakers/')
-            ));
+            echo wp_kses_post($public_class->display_single_speaker(array(
+                'username' => sanitize_text_field(wp_unslash($speaker_username)),
+                'back_url' => esc_url(site_url('/speakers/'))
+            )));
             ?>
         </div>
 

@@ -394,18 +394,21 @@
 .filter-select {
     padding: 10px 12px;
     border: 1px solid #d1d5db;
-    border-radius: 0;
+    border-radius: 4px;
     background: white;
     color: #0b3363;
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s ease;
+    width: 100%;
+    /* Removed appearance: none to restore native dropdown functionality */
+    /* Removed custom dropdown arrow to let browser handle native styling */
 }
 
 .filter-select:focus {
     outline: none;
     border-color: #6b7280;
-    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
+    box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.2);
 }
 
 .filter-select:hover {
@@ -884,12 +887,13 @@
 .session-time-small,
 .session-venue-small {
     color: #6c757d;
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 500;
     display: flex;
     align-items: center;
     gap: 5px;
     padding-top: 0.5em;
+    padding-bottom: 0.5em;
 }
 
 .session-card-description {

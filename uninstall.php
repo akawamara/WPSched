@@ -68,7 +68,11 @@ class Sched_Uninstaller {
         $tables = Sched_Activator::get_plugin_tables();
 
         foreach ($tables as $table) {
-            $wpdb->query("DROP TABLE IF EXISTS `{$table}`");
+            // For DROP TABLE statements, we need to escape the table name with esc_sql()
+            // since table names cannot be parameterized in prepared statements
+            $wpdb->query(
+                "DROP TABLE IF EXISTS " . esc_sql($table)
+            );
         }
     }
 
@@ -91,8 +95,13 @@ class Sched_Uninstaller {
         global $wpdb;
 
         // Remove all transients that start with 'sched_'
+        $options_table = esc_sql($wpdb->options);
         $wpdb->query(
-            "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_sched_%' OR option_name LIKE '_transient_timeout_sched_%'"
+            $wpdb->prepare(
+                "DELETE FROM {$options_table} WHERE option_name LIKE %s OR option_name LIKE %s",
+                '_transient_sched_%',
+                '_transient_timeout_sched_%'
+            )
         );
     }
 
