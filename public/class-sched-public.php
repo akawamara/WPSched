@@ -543,13 +543,13 @@ class Sched_Public {
         
         // Debug: log the query being executed
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            $query = "SELECT * FROM {$sched_sessions_table_escaped}" . $where_clause . " ORDER BY event_start_date ASC, event_start_time ASC LIMIT %d, %d";
+            $query = "SELECT * FROM {$sched_sessions_table_escaped}" . $where_clause . " ORDER BY CAST(event_start_time_ts AS UNSIGNED) ASC LIMIT %d, %d";
             error_log('SCHED DEBUG: Query: ' . $query);
             error_log('SCHED DEBUG: Params: ' . print_r($all_params, true));
         }
         
         $sessions = $this->wp_abstraction_get_results(
-            "SELECT * FROM {$sched_sessions_table_escaped}" . $where_clause . " ORDER BY event_start_date ASC, event_start_time ASC LIMIT %d, %d",
+            "SELECT * FROM {$sched_sessions_table_escaped}" . $where_clause . " ORDER BY CAST(event_start_time_ts AS UNSIGNED) ASC LIMIT %d, %d",
             $all_params
         );
 

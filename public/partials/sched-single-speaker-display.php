@@ -54,7 +54,7 @@ if (!$speaker) {
     <!-- Speaker Sessions -->
     <?php if (!empty($speaker_sessions)): ?>
         <div class="speaker-sessions-section">
-            <h3>Speaking At (<?php echo count($speaker_sessions); ?> session<?php echo count($speaker_sessions) !== 1 ? 's' : ''; ?>)</h3>
+            <h3>Speaking At <?php echo count($speaker_sessions); ?> session<?php echo count($speaker_sessions) !== 1 ? 's' : ''; ?></h3>
             <div class="speaker-sessions-grid">
                 <?php foreach ($speaker_sessions as $session): ?>
                     <div class="speaker-session-card event-type-<?php echo esc_attr(strtolower($session->event_type)); ?>">

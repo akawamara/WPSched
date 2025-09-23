@@ -74,7 +74,7 @@ class Sched_Activator {
             speaker_about text NULL,
             speaker_url varchar(255) NULL,
             speaker_avatar varchar(255) NULL,
-            speaker_featured varchar(255) NULL,
+            speaker_featured varchar(1) DEFAULT 'N' NOT NULL,
             PRIMARY KEY (id)
         ) $charset_collate;";
         

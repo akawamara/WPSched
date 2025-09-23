@@ -1,11 +1,11 @@
-/* GIJC 2025 Conference Plugin Styles - Matching gijc2025.org */
+/* GIJC 2025 Conference Plugin Styles */
 
 /* Container Styles */
 .sched-modern-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 1em 0.5em;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-family: 'Open Sans', Helvetica, Arial, Lucida, sans-serif;
     background-color: #ffffff;
 }
 
@@ -57,11 +57,13 @@
 
 .day-name {
     font-weight: 700;
+    color: #fff;
 }
 
 .date-info {
     font-weight: 400;
     opacity: 0.9;
+    color: #fff;
 }
 
 .sched-day-sessions {
@@ -99,7 +101,7 @@
     align-items: center;
     gap: 8px;
     font-weight: 600;
-    color: #495057;
+    color: #0a0a0a;
 }
 
 .time-icon {
@@ -132,8 +134,7 @@
 }
 
 .sched-session-header {
-    padding: 20px;
-    padding-bottom: 15px;
+    padding: 20px 15px 10px;
     border-left: 4px solid #6c757d;
     margin-left: 0;
 }
@@ -164,9 +165,10 @@
 }
 
 .session-description {
+    padding-top: 10px;
     margin-bottom: 20px;
-    line-height: 1.6;
-    color: #495057;
+    line-height: 1.4;
+    color: #0a0a0a;
 }
 
 .session-description p {
@@ -182,7 +184,7 @@
 
 .speakers-label {
     font-weight: 600;
-    color: #495057;
+    color: #0a0a0a;
     margin-bottom: 10px;
     display: flex;
     align-items: center;
@@ -208,7 +210,7 @@
 }
 
 .speaker-chip a {
-    color: #495057;
+    color: #0a0a0a;
     text-decoration: none;
     font-weight: 500;
     font-size: 0.9rem;
@@ -244,7 +246,7 @@
 
 .sched-no-sessions h3 {
     font-size: 1.5rem;
-    color: #495057;
+    color: #0a0a0a;
     margin-bottom: 10px;
 }
 
@@ -270,7 +272,7 @@
     padding: 10px 16px;
     border: 1px solid #dee2e6;
     border-radius: 0;
-    color: #495057;
+    color: #0a0a0a;
     text-decoration: none;
     font-weight: 500;
     transition: all 0.2s ease;
@@ -532,7 +534,7 @@
 .sched-session-filter label {
     font-weight: 600;
     margin-right: 10px;
-    color: #495057;
+    color: #0a0a0a;
 }
 
 .sched-session-filter select {
@@ -540,7 +542,7 @@
     border: 1px solid #dee2e6;
     border-radius: 0;
     background: white;
-    color: #495057;
+    color: #0a0a0a;
 }
 
 
@@ -754,7 +756,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 5px;
+    gap: 0px;
 }
 
 .speaker-back-link {
@@ -769,10 +771,10 @@
 }
 
 .speaker-name-large {
+    font-family: 'EB Garamond', Georgia, "Times New Roman", serif;
+    font-weight: 600;
     margin: 0;
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: #1f2937;
+    color: #0a0a0a;
     line-height: 1.1;
 }
 
@@ -785,7 +787,7 @@
 
 .speaker-company-large {
     font-size: 1.1rem;
-    color: #495057;
+    color: #0a0a0a;
     font-weight: 500;
     display: flex;
     align-items: center;
@@ -817,15 +819,15 @@
     margin: 0 0 20px 0;
     font-size: 1.5rem;
     font-weight: 600;
-    color: #2c3e50;
+    color: #0a0a0a;
     padding-bottom: 10px;
     border-bottom: 2px solid #e8ecef;
 }
 
 .speaker-bio-content {
-    font-size: 1.1rem;
-    line-height: 1.7;
-    color: #495057;
+    font-size: 1rem;
+    line-height: 1.4;
+    color: #0a0a0a;
 }
 
 .speaker-bio-content p {
@@ -866,6 +868,10 @@
     line-height: 1.3;
 }
 
+h4.session-card-title {
+    margin-bottom: 0;
+}
+
 .session-card-meta {
     display: flex;
     flex-wrap: wrap;
@@ -892,14 +898,14 @@
     display: flex;
     align-items: center;
     gap: 5px;
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .session-card-description {
     padding: 20px;
-    color: #495057;
-    line-height: 1.6;
+    color: #0a0a0a;
+    line-height: 1.4;
     border-top: 1px solid #e8ecef;
 }
 
@@ -944,7 +950,7 @@
 
 .sched-speaker-not-found h3 {
     font-size: 1.5rem;
-    color: #495057;
+    color: #0a0a0a;
     margin-bottom: 10px;
 }
 
@@ -1059,6 +1065,10 @@
     color: white;
 }
 
+h3.sched-section-title {
+    padding-bottom: 0;
+}
+
 .featured-icon,
 .speakers-icon {
     font-size: 1.2em;
@@ -1145,7 +1155,7 @@
 .speaker-featured-badge {
     background: #ff8f1f;
     color: white;
-    padding: 4px 10px;
+    padding: 0px 10px;
     border-radius: 0;
     font-size: 0.75rem;
     font-weight: 600;
@@ -1157,10 +1167,10 @@
 }
 
 .speaker-name-modern {
-    margin: 0 0 8px 0;
+    margin: 0 0 2px 0;
     font-size: 1.25rem;
     font-weight: 700;
-    line-height: 1.3;
+    line-height: 1.2;
     color: #1f2937;
 }
 
@@ -1178,8 +1188,13 @@
     color: #6b7280;
     font-size: 0.95rem;
     font-weight: 500;
-    margin: 0 0 6px 0;
-    line-height: 1.4;
+    margin: 0 0 2px 0;
+    line-height: 1.2;
+}
+
+h2.speaker-name-modern,
+h4.speaker-position {
+    padding-bottom: 0;
 }
 
 .speaker-company {
@@ -1187,11 +1202,11 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    color: #4b5563;
+    color: #0a0a0a;
     font-size: 0.9rem;
     font-weight: 500;
     margin: 0;
-    line-height: 1.4;
+    line-height: 1.2;
 }
 
 .company-icon {
