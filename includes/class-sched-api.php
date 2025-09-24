@@ -323,8 +323,10 @@ class Sched_API {
             ) $charset_collate;";
             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
             dbDelta($sessions_sql);
+        } else {
+            $sessions_table_escaped = esc_sql($sessions_table_name);
+            $wpdb->query($wpdb->prepare("DELETE FROM {$sessions_table_escaped}"));
         }
-        // REMOVED: No longer truncating sessions table on every sync
 
         // Create speakers table or truncate if exists
         if($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $speakers_table_name)) != $speakers_table_name) {
@@ -409,7 +411,7 @@ class Sched_API {
     }
 
     /**
-     * Insert session data - FIXED: Use UPDATE or INSERT instead of DELETE ALL + INSERT
+     * Insert session data - based on wp-sched.php function
      */
     private function insert_session_data($sessions) {
         global $wpdb;
@@ -418,71 +420,50 @@ class Sched_API {
 
         foreach ($sessions as $session) {
             if ($session['active'] == "Y") {
-                // Check if session already exists
-                $existing_session = $wpdb->get_var($wpdb->prepare(
-                    "SELECT id FROM {$table_name} WHERE event_id = %s",
-                    $session['id']
-                ));
-
-                $session_data = array(
-                    'event_key' => array_key_exists('event_key', $session) ? $session['event_key'] : '',
-                    'event_active' => array_key_exists('active', $session) ? $session['active'] : '',
-                    'pinned' => array_key_exists('pinned', $session) ? $session['pinned'] : '',
-                    'event_name' => array_key_exists('name', $session) ? $session['name'] : '',
-                    'event_start' => array_key_exists('event_start', $session) ? $session['event_start'] : '',
-                    'event_end' => array_key_exists('event_end', $session) ? $session['event_end'] : '',
-                    'event_type' => array_key_exists('event_type', $session) ? $session['event_type'] : '',
-                    'event_subtype' => array_key_exists('event_subtype', $session) ? $session['event_subtype'] : '',
-                    'event_description' => array_key_exists('description', $session) ? $session['description'] : '',
-                    'goers' => array_key_exists('goers', $session) ? $session['goers'] : '',
-                    'seats' => array_key_exists('seats', $session) ? $session['seats'] : '',
-                    'invite_only' => array_key_exists('invite_only', $session) ? $session['invite_only'] : '',
-                    'venue' => array_key_exists('venue', $session) ? $session['venue'] : '',
-                    'event_address' => array_key_exists('address', $session) ? $session['address'] : '',
-                    'event_id' => array_key_exists('id', $session) ? $session['id'] : '',
-                    'event_start_year' => array_key_exists('event_start_year', $session) ? $session['event_start_year'] : '',
-                    'event_start_month' => array_key_exists('event_start_month', $session) ? $session['event_start_month'] : '',
-                    'event_start_month_short' => array_key_exists('event_start_month_short', $session) ? $session['event_start_month_short'] : '',
-                    'event_start_day' => array_key_exists('event_start_day', $session) ? $session['event_start_day'] : '',
-                    'event_start_weekday' => array_key_exists('event_start_weekday', $session) ? $session['event_start_weekday'] : '',
-                    'event_start_weekday_short' => array_key_exists('event_start_weekday_short', $session) ? $session['event_start_weekday_short'] : '',
-                    'event_start_time' => array_key_exists('event_start_time', $session) ? $session['event_start_time'] : '',
-                    'event_end_year' => array_key_exists('event_end_year', $session) ? $session['event_end_year'] : '',
-                    'event_end_month' => array_key_exists('event_end_month', $session) ? $session['event_end_month'] : '',
-                    'event_end_month_short' => array_key_exists('event_end_month_short', $session) ? $session['event_end_month_short'] : '',
-                    'event_end_day' => array_key_exists('event_end_day', $session) ? $session['event_end_day'] : '',
-                    'event_end_weekday' => array_key_exists('event_end_weekday', $session) ? $session['event_end_weekday'] : '',
-                    'event_end_weekday_short' => array_key_exists('event_end_weekday_short', $session) ? $session['event_end_weekday_short'] : '',
-                    'event_end_time' => array_key_exists('event_end_time', $session) ? $session['event_end_time'] : '',
-                    'event_start_date' => array_key_exists('start_date', $session) ? $session['start_date'] : '',
-                    'event_start_datetime' => array_key_exists('start_date', $session) ? $session['start_date'] . ' ' . $session['start_time'] : '',
-                    'event_end_date' => array_key_exists('end_date', $session) ? $session['end_date'] : '',
-                    'event_end_datetime' => array_key_exists('end_date', $session) ? $session['end_date'] . ' ' . $session['end_time'] : '',
-                    'event_start_time_ts' => array_key_exists('start_time_ts', $session) ? $session['start_time_ts'] : '',
-                    'event_type_sort' => array_key_exists('event_type_sort', $session) ? $session['event_type_sort'] : '',
+                $wpdb->insert(
+                    $table_name,
+                    array(
+                        'event_key' => array_key_exists('event_key', $session) ? $session['event_key'] : '',
+                        'event_active' => array_key_exists('active', $session) ? $session['active'] : '',
+                        'pinned' => array_key_exists('pinned', $session) ? $session['pinned'] : '',
+                        'event_name' => array_key_exists('name', $session) ? $session['name'] : '',
+                        'event_start' => array_key_exists('event_start', $session) ? $session['event_start'] : '',
+                        'event_end' => array_key_exists('event_end', $session) ? $session['event_end'] : '',
+                        'event_type' => array_key_exists('event_type', $session) ? $session['event_type'] : '',
+                        'event_subtype' => array_key_exists('event_subtype', $session) ? $session['event_subtype'] : '',
+                        'event_description' => array_key_exists('description', $session) ? $session['description'] : '',
+                        'goers' => array_key_exists('goers', $session) ? $session['goers'] : '',
+                        'seats' => array_key_exists('seats', $session) ? $session['seats'] : '',
+                        'invite_only' => array_key_exists('invite_only', $session) ? $session['invite_only'] : '',
+                        'venue' => array_key_exists('venue', $session) ? $session['venue'] : '',
+                        'event_address' => array_key_exists('address', $session) ? $session['address'] : '',
+                        'event_id' => array_key_exists('id', $session) ? $session['id'] : '',
+                        'event_start_year' => array_key_exists('event_start_year', $session) ? $session['event_start_year'] : '',
+                        'event_start_month' => array_key_exists('event_start_month', $session) ? $session['event_start_month'] : '',
+                        'event_start_month_short' => array_key_exists('event_start_month_short', $session) ? $session['event_start_month_short'] : '',
+                        'event_start_day' => array_key_exists('event_start_day', $session) ? $session['event_start_day'] : '',
+                        'event_start_weekday' => array_key_exists('event_start_weekday', $session) ? $session['event_start_weekday'] : '',
+                        'event_start_weekday_short' => array_key_exists('event_start_weekday_short', $session) ? $session['event_start_weekday_short'] : '',
+                        'event_start_time' => array_key_exists('event_start_time', $session) ? $session['event_start_time'] : '',
+                        'event_end_year' => array_key_exists('event_end_year', $session) ? $session['event_end_year'] : '',
+                        'event_end_month' => array_key_exists('event_end_month', $session) ? $session['event_end_month'] : '',
+                        'event_end_month_short' => array_key_exists('event_end_month_short', $session) ? $session['event_end_month_short'] : '',
+                        'event_end_day' => array_key_exists('event_end_day', $session) ? $session['event_end_day'] : '',
+                        'event_end_weekday' => array_key_exists('event_end_weekday', $session) ? $session['event_end_weekday'] : '',
+                        'event_end_weekday_short' => array_key_exists('event_end_weekday_short', $session) ? $session['event_end_weekday_short'] : '',
+                        'event_end_time' => array_key_exists('event_end_time', $session) ? $session['event_end_time'] : '',
+                        'event_start_date' => array_key_exists('start_date', $session) ? $session['start_date'] : '',
+                        'event_start_datetime' => array_key_exists('start_date', $session) ? $session['start_date'] . ' ' . $session['start_time'] : '',
+                        'event_end_date' => array_key_exists('end_date', $session) ? $session['end_date'] : '',
+                        'event_end_datetime' => array_key_exists('end_date', $session) ? $session['end_date'] . ' ' . $session['end_time'] : '',
+                        'event_start_time_ts' => array_key_exists('start_time_ts', $session) ? $session['start_time_ts'] : '',
+                        'event_type_sort' => array_key_exists('event_type_sort', $session) ? $session['event_type_sort'] : '',
+                    )
                 );
-
-                if ($existing_session) {
-                    // UPDATE existing session
-                    $wpdb->update(
-                        $table_name,
-                        $session_data,
-                        array('event_id' => $session['id'])
-                    );
-                } else {
-                    // INSERT new session
-                    $wpdb->insert($table_name, $session_data);
-                }
 
                 $count++;
 
-                // Handle speakers for this session - first clear existing speakers
-                $wpdb->delete(
-                    $wpdb->prefix . 'sched_sessions_speakers',
-                    array('session_id' => $session['id'])
-                );
-
-                // Insert current speakers
+                // Handle speakers for this session
                 if (array_key_exists('speakers', $session)) {
                     foreach ($session['speakers'] as $speaker) {
                         $wpdb->insert(
