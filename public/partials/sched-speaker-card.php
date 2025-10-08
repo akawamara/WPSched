@@ -14,7 +14,7 @@ if (!isset($speaker)) {
 <div class="sched-speaker-card<?php echo $is_featured ? esc_attr(' featured') : ''; ?>">
     <div class="speaker-card-header">
         <div class="speaker-avatar-container">
-            <a href="<?php echo esc_url(site_url()); ?>/speakers/<?php echo esc_attr($speaker->username); ?>" title="<?php echo esc_attr($speaker->speaker_name); ?>">
+            <a href="<?php echo esc_url($plugin_instance->get_speaker_page_url($speaker->username)); ?>" title="<?php echo esc_attr($speaker->speaker_name); ?>">
                 <?php if ($speaker->speaker_avatar): ?>
                     <img class="speaker-avatar-modern" src="<?php echo esc_url($speaker->speaker_avatar); ?>" alt="avatar for <?php echo esc_attr($speaker->speaker_name); ?>" />
                 <?php else: ?>
@@ -28,7 +28,7 @@ if (!isset($speaker)) {
     </div>
     <div class="speaker-card-content">
         <h2 class="speaker-name-modern">
-            <a href="<?php echo esc_url(site_url()); ?>/speakers/<?php echo esc_attr($speaker->username); ?>" title="View their profile and schedule">
+            <a href="<?php echo esc_url($plugin_instance->get_speaker_page_url($speaker->username)); ?>" title="View their profile and schedule">
                 <?php echo esc_html($speaker->speaker_name); ?>
             </a>
         </h2>

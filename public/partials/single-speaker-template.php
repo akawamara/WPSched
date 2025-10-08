@@ -1,11 +1,4 @@
 <?php
-
-/**
- * Template for virtual speaker pages
- * This template prevents WordPress conflicts by not loading post/comment context
- */
-
-// Get speaker data from query vars
 $speaker = get_query_var('speaker_data');
 $speaker_username = get_query_var('speaker_username');
 
@@ -13,7 +6,6 @@ if (!$speaker) {
     wp_die('Speaker not found', 'Speaker Not Found', array('response' => 404));
 }
 
-// Get site info for HTML structure  
 $site_title = get_bloginfo('name');
 $site_description = get_bloginfo('description');
 
@@ -97,15 +89,19 @@ $site_description = get_bloginfo('description');
     <div class="speaker-page-wrapper">
 
         <div class="speaker-page-header">
-            <a href="<?php echo esc_url(site_url('/speakers/')); ?>" class="speaker-back-link">
-                ← Back to Speakers
+            <a href="javascript:history.back();" class="speaker-back-link">
+                ← Back
             </a>
             <?php
-            // Use the single speaker shortcode to render the profile
-            $public_class = new Sched_Public('sched-conference-plugin', '1.0.0');
-            echo wp_kses_post($public_class->display_single_speaker(array(
-                'username' => sanitize_text_field(wp_unslash($speaker_username)),
-                'back_url' => esc_url(site_url('/speakers/'))
+            // Get the public class instance to render the speaker content
+            global $sched_public_instance;
+            if (!$sched_public_instance) {
+                $sched_public_instance = new Sched_Public('sched-conference-plugin', '1.0.0');
+            }
+            
+            // Display the speaker content using the shortcode with current speaker data
+            echo wp_kses_post($sched_public_instance->display_single_speaker(array(
+                'username' => sanitize_text_field(wp_unslash($speaker_username))
             )));
             ?>
         </div>

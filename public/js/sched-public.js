@@ -259,9 +259,6 @@ jQuery(document).ready(function($) {
                 
                 card.appendChild(ripple);
                 setTimeout(() => ripple.remove(), 600);
-                
-                // Potential future feature: open session detail modal
-                console.log('Session clicked:', card.querySelector('.session-title').textContent);
             });
         });
     }

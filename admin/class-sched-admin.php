@@ -1,8 +1,4 @@
 <?php
-
-/**
- * The admin-specific functionality of the plugin.
- */
 class Sched_Admin {
 
     private $plugin_name;
@@ -13,20 +9,13 @@ class Sched_Admin {
         $this->version = $version;
     }
 
-    /**
-     * Register the stylesheets for the admin area.
-     */
     public function enqueue_styles() {
         wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/sched-admin.css', array(), $this->version, 'all');
     }
 
-    /**
-     * Register the JavaScript for the admin area.
-     */
     public function enqueue_scripts() {
         wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/sched-admin.js', array('jquery'), $this->version, false);
         
-        // Localize script for AJAX
         wp_localize_script($this->plugin_name, 'sched_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce'    => wp_create_nonce('sched_nonce')

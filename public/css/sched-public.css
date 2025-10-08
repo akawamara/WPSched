@@ -1,6 +1,3 @@
-/* GIJC 2025 Conference Plugin Styles */
-
-/* Container Styles */
 .sched-modern-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -30,7 +27,6 @@
     gap: 20px;
 }
 
-/* Date Section Styles */
 .sched-date-section {
     background: #ffffff;
     border: 1px solid #e5e7eb;
@@ -70,7 +66,6 @@
     padding: 20px;
 }
 
-/* Session Card Styles */
 .sched-session-card {
     background: #ffffff;
     border: 1px solid #e5e7eb;
@@ -147,6 +142,17 @@
     line-height: 1.3;
 }
 
+.session-title-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.session-title-link:hover {
+    color: #1e40af;
+    text-decoration: underline;
+}
+
 .sched-session-content {
     padding: 0 20px 20px 20px;
 }
@@ -175,7 +181,6 @@
     margin-bottom: 10px;
 }
 
-/* Speakers Section */
 .session-speakers {
     border-top: 1px solid #e8ecef;
     padding-top: 15px;
@@ -202,22 +207,30 @@
     border-radius: 0;
     padding: 3px 14px 6px;
     transition: all 0.2s ease;
+    border: 1px solid transparent;
 }
 
 .speaker-chip:hover {
-    background: #dee2e6;
+    background: #0b3363;
+    border-color: #0b3363;
     transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(11, 51, 99, 0.2);
 }
 
 .speaker-chip a {
-    color: #0a0a0a;
+    color: #0b3363;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 0.9rem;
+    transition: color 0.2s ease;
+}
+
+.speaker-chip:hover a {
+    color: white;
 }
 
 .speaker-chip a:hover {
-    color: #2c3e50;
+    text-decoration: underline;
 }
 
 /* Event Type Color Coding */
@@ -771,7 +784,6 @@
 }
 
 .speaker-name-large {
-    font-family: 'EB Garamond', Georgia, "Times New Roman", serif;
     font-weight: 600;
     margin: 0;
     color: #0a0a0a;
@@ -899,6 +911,17 @@ h4.session-card-title {
     align-items: center;
     gap: 5px;
     padding-top: 0;
+    padding-bottom: 0;
+}
+
+.session-datetime-small {
+    color: #6c757d;
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding-top: 5px;
     padding-bottom: 0;
 }
 
@@ -1209,6 +1232,18 @@ h4.speaker-position {
     line-height: 1.2;
 }
 
+.speaker-company-left {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    gap: 6px;
+    color: #0a0a0a;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin: 0;
+    line-height: 1.2;
+}
+
 .company-icon {
     font-size: 0.8em;
     opacity: 0.7;
@@ -1325,5 +1360,288 @@ h4.speaker-position {
     
     .speaker-company {
         font-size: 0.8rem;
+    }
+}
+
+/* Single Session Page Styles - Matching Single Speaker Design */
+.sched-single-session-container {
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.sched-session-navigation {
+    margin-bottom: 1em;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 16px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0;
+    color: #0b3363;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    gap: 8px;
+}
+
+.back-link:hover {
+    background: #0b3363;
+    border-color: #0b3363;
+    color: white;
+}
+
+.sched-session-header-single {
+    margin-bottom: 1em;
+    padding: 1em;
+    background: white;
+    border-radius: 0;
+    border: 1px solid #e5e7eb;
+}
+
+.session-type-large {
+    margin-bottom: 12px;
+}
+
+.session-type-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: white;
+    border-radius: 4px;
+}
+
+.session-featured-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    background: #dc2626;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 4px;
+    margin-left: 8px;
+}
+
+.session-name-large {
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    color: #0a0a0a;
+    line-height: 1.1;
+}
+
+.session-time-large {
+    font-size: 1.2rem;
+    color: #6b7280;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 4px;
+}
+
+.session-venue-large {
+    font-size: 1.1rem;
+    color: #0a0a0a;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.session-description-section,
+.session-speakers-section,
+.session-details-section {
+    background: white;
+    border-radius: 0;
+    padding: 1em;
+    margin-bottom: 1em;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e8ecef;
+}
+
+.session-description-section h3,
+.session-speakers-section h3,
+.session-details-section h3 {
+    margin: 0 0 20px 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #0a0a0a;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e8ecef;
+}
+
+.session-description-content {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #0a0a0a;
+}
+
+.session-description-content p {
+    margin-bottom: 15px;
+}
+
+.session-speakers-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.session-speaker-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0px;
+    padding: 20px;
+    transition: all 0.2s ease;
+}
+
+.session-speaker-card:hover {
+    background: #f3f4f6;
+    border-color: #0b3363;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(11, 51, 99, 0.1);
+}
+
+.session-speaker-name {
+    margin: 0 0 8px 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #0a0a0a;
+    line-height: 1.3;
+}
+
+.session-speaker-name a {
+    color: #0b3363;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.session-speaker-name a:hover {
+    color: #1e40af;
+    text-decoration: underline;
+}
+
+.session-speaker-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.session-speaker-meta .speaker-position {
+    font-size: 1rem;
+    color: #6b7280;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.session-speaker-meta .speaker-company {
+    font-size: 0.95rem;
+    color: #374151;
+    font-weight: 500;
+    display: flex;
+    gap: 6px;
+}
+
+.company-icon {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.session-speaker-bio {
+    font-size: 0.925rem;
+    color: #6b7280;
+    line-height: 1.5;
+    margin-top: 12px;
+}
+
+.read-more-link {
+    color: #0b3363;
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 4px;
+    font-size: 0.875rem;
+}
+
+.read-more-link:hover {
+    text-decoration: underline;
+}
+
+.session-details-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.detail-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.detail-value {
+    font-size: 1rem;
+    color: #0a0a0a;
+    font-weight: 500;
+}
+
+.session-navigation {
+    margin-top: 2em;
+    padding-top: 1em;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Responsive Design for Single Session */
+@media (max-width: 768px) {
+    .sched-single-session-container {
+        margin: 0 10px;
+    }
+    
+    .session-name-large {
+        font-size: 2rem;
+    }
+    
+    .session-speakers-grid {
+        gap: 15px;
+    }
+    
+    .session-speaker-card {
+        padding: 15px;
+    }
+    
+    .session-details-content {
+        gap: 12px;
+    }
+}
+
+/* Speaker grid enhancement for multiple speakers */
+@media (min-width: 769px) {
+    .session-speakers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    /* For exactly 2 speakers, ensure even spacing */
+    .session-speakers-grid:has(.session-speaker-card:nth-child(2):last-child) {
+        grid-template-columns: 1fr 1fr;
     }
 }

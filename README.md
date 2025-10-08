@@ -120,7 +120,7 @@ wpsched/
 │       ├── sched-session-card.php        # Individual session card
 │       ├── sched-speaker-card.php        # Individual speaker card
 │       ├── sched-single-speaker-display.php # Single speaker template
-│       └── speaker-page-template.php     # Virtual speaker page template
+│       └── single-speaker-template.php   # Virtual speaker page template
 └── languages/                            # Translation files
     └── sched-conference-plugin.pot       # Translation template
 ```

@@ -7,15 +7,118 @@ class Sched_Public {
 
     private $plugin_name;
     private $version;
+    private $current_page_context = null; // Store the page context when shortcode is rendered
 
     public function __construct($plugin_name, $version) {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
         
-        // Add virtual page hooks for speaker profiles
         add_action('init', array($this, 'add_speaker_rewrite_rules'));
         add_action('template_redirect', array($this, 'handle_speaker_virtual_pages'));
         add_filter('template_include', array($this, 'load_speaker_template'));
+        
+        add_action('init', array($this, 'add_session_rewrite_rules'));
+        add_action('template_redirect', array($this, 'handle_session_virtual_pages'));
+        add_filter('template_include', array($this, 'load_session_template'));
+    }
+
+    /**
+     * Capture the current page context when shortcode is rendered
+     */
+    private function capture_page_context() {
+        global $post;
+        
+        // Only capture if not already captured and we have a valid post
+        if ($this->current_page_context === null && $post && $post->post_type === 'page') {
+            $page_path = get_page_uri($post->ID);
+            $this->current_page_context = array(
+                'page_id' => $post->ID,
+                'page_path' => $page_path,
+                'page_slug' => $post->post_name,
+                'full_url' => get_permalink($post->ID)
+            );
+        }
+    }
+
+    /**
+     * Get the current page context (captured during shortcode rendering)
+     */
+    public function get_current_page_context() {
+        return $this->current_page_context;
+    }
+
+    /**
+     * Get the base path for sessions using page context from shortcode rendering
+     */
+    public function get_sessions_base_path() {
+        // Use captured page context if available (most reliable)
+        if ($this->current_page_context && !empty($this->current_page_context['page_path'])) {
+            $page_path = $this->current_page_context['page_path'];
+            
+            // If the page path already contains 'sessions', use the parent path
+            if (strpos($page_path, '/sessions') !== false) {
+                $base_path = str_replace('/sessions', '', $page_path);
+                return trim($base_path, '/') . '/sessions';
+            }
+            
+            // Otherwise, append '/sessions' to current page path
+            return trim($page_path, '/') . '/sessions';
+        }
+        
+        // Fallback 1: Check if we have WordPress pages for either path
+        $sessions_page = get_page_by_path('program/sessions');
+        if ($sessions_page) {
+            return 'program/sessions';
+        }
+        
+        $sessions_page = get_page_by_path('sessions');
+        if ($sessions_page) {
+            return 'sessions';
+        }
+        
+        // Fallback 2: detect from current URL
+        if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '/program/sessions') !== false) {
+            return 'program/sessions';
+        }
+        
+        return 'sessions'; // Default
+    }
+
+    /**
+     * Get the base path for speakers using page context from shortcode rendering
+     */
+    public function get_speakers_base_path() {
+        // Use captured page context if available (most reliable)
+        if ($this->current_page_context && !empty($this->current_page_context['page_path'])) {
+            $page_path = $this->current_page_context['page_path'];
+            
+            // If the page path already contains 'speakers', use the parent path  
+            if (strpos($page_path, '/speakers') !== false) {
+                $base_path = str_replace('/speakers', '', $page_path);
+                return trim($base_path, '/') . '/speakers';
+            }
+            
+            // Otherwise, append '/speakers' to current page path
+            return trim($page_path, '/') . '/speakers';
+        }
+        
+        // Fallback 1: Check if we have WordPress pages for either path
+        $speakers_page = get_page_by_path('program/speakers');
+        if ($speakers_page) {
+            return 'program/speakers';
+        }
+        
+        $speakers_page = get_page_by_path('speakers');
+        if ($speakers_page) {
+            return 'speakers';
+        }
+        
+        // Fallback 2: detect from current URL
+        if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '/program/speakers') !== false) {
+            return 'program/speakers';
+        }
+        
+        return 'speakers'; // Default
     }
 
     /**
@@ -23,20 +126,12 @@ class Sched_Public {
      * Eliminates "direct database call" warnings by using transient caching
      */
     private function wp_abstraction_get_results($sql_statement, $params = array()) {
-        // Temporarily bypass cache for debugging
-        // $cache_key = 'sched_query_' . md5($sql_statement . serialize($params));
-        // $results = get_transient($cache_key);
-        
-        // if ($results === false) {
-            global $wpdb;
-            if (!empty($params)) {
-                $results = $wpdb->get_results($wpdb->prepare($sql_statement, ...$params));
-            } else {
-                $results = $wpdb->get_results($sql_statement);
-            }
-            // Cache for 5 minutes using WordPress transients
-            // set_transient($cache_key, $results, 300);
-        // }
+        global $wpdb;
+        if (!empty($params)) {
+            $results = $wpdb->get_results($wpdb->prepare($sql_statement, ...$params));
+        } else {
+            $results = $wpdb->get_results($sql_statement);
+        }
         
         return $results;
     }
@@ -46,7 +141,6 @@ class Sched_Public {
      * Eliminates "direct database call" warnings by using transient caching
      */
     private function wp_abstraction_get_var($sql_statement, $params = array()) {
-        // Create cache key from query and parameters
         $cache_key = 'sched_var_' . md5($sql_statement . serialize($params));
         $result = get_transient($cache_key);
         
@@ -57,7 +151,6 @@ class Sched_Public {
             } else {
                 $result = $wpdb->get_var($sql_statement);
             }
-            // Cache for 5 minutes using WordPress transients
             set_transient($cache_key, $result, 300);
         }
         
@@ -69,7 +162,6 @@ class Sched_Public {
      * Eliminates "direct database call" warnings by using transient caching
      */
     private function wp_abstraction_get_row($sql_statement, $params = array()) {
-        // Create cache key from query and parameters
         $cache_key = 'sched_row_' . md5($sql_statement . serialize($params));
         $result = get_transient($cache_key);
         
@@ -80,7 +172,6 @@ class Sched_Public {
             } else {
                 $result = $wpdb->get_row($sql_statement);
             }
-            // Cache for 5 minutes using WordPress transients
             set_transient($cache_key, $result, 300);
         }
         
@@ -92,20 +183,12 @@ class Sched_Public {
      * Eliminates "direct database call" warnings by using transient caching
      */
     private function wp_abstraction_get_col($sql_statement, $params = array()) {
-        // Temporarily bypass cache for debugging
-        // $cache_key = 'sched_col_' . md5($sql_statement . serialize($params));
-        // $result = get_transient($cache_key);
-        
-        // if ($result === false) {
-            global $wpdb;
-            if (!empty($params)) {
-                $result = $wpdb->get_col($wpdb->prepare($sql_statement, ...$params));
-            } else {
-                $result = $wpdb->get_col($sql_statement);
-            }
-            // Cache for 5 minutes using WordPress transients
-            // set_transient($cache_key, $result, 300);
-        // }
+        global $wpdb;
+        if (!empty($params)) {
+            $result = $wpdb->get_col($wpdb->prepare($sql_statement, ...$params));
+        } else {
+            $result = $wpdb->get_col($sql_statement);
+        }
         
         return $result;
     }
@@ -197,7 +280,7 @@ class Sched_Public {
     /**
      * Load template with theme override support and proper context
      */
-    private function load_template($template_name, $data = array()) {
+    public function load_template($template_name, $data = array()) {
         // Allow themes to override plugin templates
         $template_path = locate_template(array(
             "sched/{$template_name}.php",
@@ -352,11 +435,6 @@ class Sched_Public {
                 $results = array();
         }
         
-        // Debug: Log what we get for filter data
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('SCHED DEBUG: Filter metadata query for ' . $metadata_type . ' returned: ' . count($results) . ' items');
-        }
-        
         return array_filter($results);
     }
 
@@ -463,15 +541,6 @@ class Sched_Public {
         // Get paginated results
         $offset = ($paged - 1) * $posts_per_page;
         $sessions = $this->get_sessions_paginated($filters, $offset, $posts_per_page);
-
-        // Temporary debug: let's see what we get
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('SCHED DEBUG: Total results: ' . $total_results . ', Sessions count: ' . count($sessions));
-            if (!empty($sessions)) {
-                error_log('SCHED DEBUG: First session: ' . print_r($sessions[0], true));
-            }
-        }
-
         $result = array(
             'sessions' => $sessions,
             'total_results' => $total_results
@@ -541,13 +610,6 @@ class Sched_Public {
         $sched_sessions_table_escaped = esc_sql($sched_sessions_table);
         $all_params = array_merge($query_params, array($offset, $limit));
         
-        // Debug: log the query being executed
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            $query = "SELECT * FROM {$sched_sessions_table_escaped}" . $where_clause . " ORDER BY CAST(event_start_time_ts AS UNSIGNED) ASC LIMIT %d, %d";
-            error_log('SCHED DEBUG: Query: ' . $query);
-            error_log('SCHED DEBUG: Params: ' . print_r($all_params, true));
-        }
-        
         $sessions = $this->wp_abstraction_get_results(
             "SELECT * FROM {$sched_sessions_table_escaped}" . $where_clause . " ORDER BY CAST(event_start_time_ts AS UNSIGNED) ASC LIMIT %d, %d",
             $all_params
@@ -614,6 +676,15 @@ class Sched_Public {
      * Display sessions shortcode - clean separation of concerns
      */
     public function display_sessions($atts = array()) {
+        // Capture current page context when shortcode is rendered
+        $this->capture_page_context();
+        
+        // Check if this is a single session request first
+        if ($this->is_single_session_request()) {
+            // Use virtual page system instead of inline display - let the virtual page handler take over
+            return ''; // Return empty to let the virtual page system handle it
+        }
+        
         // 1. Parse attributes and sanitize input
         $atts = shortcode_atts(array(
             'limit' => get_option('sched_pagination_number', 32),
@@ -784,6 +855,42 @@ class Sched_Public {
         );
         
         // Cache for 30 minutes (1800 seconds) - speaker data changes less frequently
+        wp_cache_set($cache_key, $result, 'sched_plugin', 1800);
+        
+        return $result;
+    }
+
+    /**
+     * Get single session data - clean separation like speakers
+     */
+    public function get_single_session_data($session_id) {
+        $cache_key = 'sched_session_data_' . sanitize_key($session_id);
+        $cached_data = wp_cache_get($cache_key, 'sched_plugin');
+        
+        if ($cached_data !== false) {
+            return $cached_data;
+        }
+        
+        // Use existing methods for data retrieval
+        $session = $this->get_session_by_id($session_id);
+        $session_speakers = array();
+        $back_url = home_url('/');
+        
+        if ($session) {
+            // Get session speakers using existing method
+            $session_speakers = $this->get_speakers_for_session($session_id);
+            
+            // Generate back URL - try to find sessions page using current page context
+            $back_url = $this->get_sessions_page_url();
+        }
+        
+        $result = array(
+            'session' => $session,
+            'session_speakers' => $session_speakers,
+            'back_url' => $back_url
+        );
+        
+        // Cache for 30 minutes like speakers
         wp_cache_set($cache_key, $result, 'sched_plugin', 1800);
         
         return $result;
@@ -1011,6 +1118,9 @@ class Sched_Public {
      * Display speakers shortcode - clean separation of concerns
      */
     public function display_speakers($atts = array()) {
+        // Capture current page context when shortcode is rendered
+        $this->capture_page_context();
+        
         // 1. Parse attributes and sanitize input
         $atts = shortcode_atts(array(
             'limit' => get_option('sched_pagination_number', 100),
@@ -1050,11 +1160,53 @@ class Sched_Public {
     }
 
     /**
-     * Add rewrite rules for speaker virtual pages
+     * Add rewrite rules for speaker virtual pages - supports multiple base paths
      */
     public function add_speaker_rewrite_rules() {
+        // Add multiple rewrite patterns to handle different base paths
+        
+        // Pattern 1: /program/speakers/{username}
+        add_rewrite_rule('^program/speakers/([^/]+)/?$', 'index.php?speaker_username=$matches[1]', 'top');
+        
+        // Pattern 2: /program/schedule/speakers/{username}  
+        add_rewrite_rule('^program/schedule/speakers/([^/]+)/?$', 'index.php?speaker_username=$matches[1]', 'top');
+        
+        // Pattern 3: Generic pattern for any depth - /any/path/speakers/{username}
+        add_rewrite_rule('^([^/]+(?:/[^/]+)*)/speakers/([^/]+)/?$', 'index.php?speaker_username=$matches[2]', 'top');
+        
+        // Pattern 4: Simple /speakers/{username} fallback
         add_rewrite_rule('^speakers/([^/]+)/?$', 'index.php?speaker_username=$matches[1]', 'top');
+        
         add_rewrite_tag('%speaker_username%', '([^&]+)');
+    }
+    
+    /**
+     * Add rewrite rules for session virtual pages - supports multiple base paths
+     */
+    public function add_session_rewrite_rules() {
+        // Add multiple rewrite patterns to handle different base paths
+        
+        // Pattern 1: /program/sessions/{id}
+        add_rewrite_rule('^program/sessions/([^/]+)/?$', 'index.php?session_id=$matches[1]', 'top');
+        
+        // Pattern 2: /program/schedule/sessions/{id}  
+        add_rewrite_rule('^program/schedule/sessions/([^/]+)/?$', 'index.php?session_id=$matches[1]', 'top');
+        
+        // Pattern 3: Generic pattern for any depth - /any/path/sessions/{id}
+        add_rewrite_rule('^([^/]+(?:/[^/]+)*)/sessions/([^/]+)/?$', 'index.php?session_id=$matches[2]', 'top');
+        
+        // Pattern 4: Simple /sessions/{id} fallback
+        add_rewrite_rule('^sessions/([^/]+)/?$', 'index.php?session_id=$matches[1]', 'top');
+        
+        add_rewrite_tag('%session_id%', '([^&]+)');
+    }
+    
+    /**
+     * Flush rewrite rules to ensure clean URLs work
+     */
+    public function flush_session_rewrite_rules() {
+        $this->add_session_rewrite_rules();
+        flush_rewrite_rules();
     }
 
     /**
@@ -1108,6 +1260,54 @@ class Sched_Public {
             status_header(200);
         }
     }
+    
+    /**
+     * Handle session virtual pages - updated to follow speaker pattern
+     */
+    public function handle_session_virtual_pages() {
+        $session_id = get_query_var('session_id');
+        
+        if (!empty($session_id)) {
+            // Use new data method for clean separation
+            $session_data = $this->get_single_session_data($session_id);
+            
+            if (!$session_data['session']) {
+                // Session not found, trigger 404
+                global $wp_query;
+                $wp_query->set_404();
+                status_header(404);
+                return;
+            }
+            
+            // Set up virtual page properly like speakers
+            global $wp_query;
+            $wp_query->is_404 = false;
+            $wp_query->is_page = false;
+            $wp_query->is_singular = false;
+            $wp_query->is_home = false;
+            $wp_query->is_front_page = false;
+            
+            $wp_query->set('is_session_page', true);
+            $wp_query->set('session_data', $session_data['session']);
+            $wp_query->set('session_speakers_data', $session_data['session_speakers']);
+            $wp_query->set('session_id', $session_id);
+            
+            // Disable comments on virtual pages like speakers
+            add_filter('comments_open', '__return_false', 999);
+            add_filter('pings_open', '__return_false', 999);
+            add_filter('comments_array', '__return_empty_array', 999);
+            
+            // Remove comment-related scripts
+            remove_action('wp_head', 'wp_enqueue_comment_reply');
+            remove_action('wp_footer', 'wp_print_footer_scripts');
+            
+            // Filter out any comment blocks that might try to render
+            add_filter('render_block', array($this, 'filter_comment_blocks'), 10, 2);
+            
+            // Set proper HTTP headers
+            status_header(200);
+        }
+    }
 
     /**
      * Filter out comment blocks on speaker pages
@@ -1126,12 +1326,31 @@ class Sched_Public {
     }
 
     /**
+     * Load custom template for session pages
+     */
+    public function load_session_template($template) {
+        if (get_query_var('is_session_page')) {
+            // Use a simple template that doesn't trigger WordPress post context
+            $custom_template = plugin_dir_path(__FILE__) . 'partials/single-session-template.php';
+            if (file_exists($custom_template)) {
+                return $custom_template;
+            }
+            
+            // Fallback: create minimal template inline
+            $this->render_session_page_inline();
+            exit;
+        }
+        
+        return $template;
+    }
+
+    /**
      * Load custom template for speaker pages
      */
     public function load_speaker_template($template) {
         if (get_query_var('is_speaker_page')) {
             // Use a simple template that doesn't trigger WordPress post context
-            $custom_template = plugin_dir_path(__FILE__) . 'partials/speaker-page-template.php';
+            $custom_template = plugin_dir_path(__FILE__) . 'partials/single-speaker-template.php';
             if (file_exists($custom_template)) {
                 return $custom_template;
             }
@@ -1172,6 +1391,41 @@ class Sched_Public {
         <body class="speaker-page">
             <div class="speaker-page-container">
                 <?php echo wp_kses_post($this->display_single_speaker(array('username' => sanitize_text_field(wp_unslash($speaker_username))))); ?>
+            </div>
+            <?php wp_footer(); ?>
+        </body>
+        </html>
+        <?php
+    }
+    
+    /**
+     * Render session page inline if no template file exists
+     */
+    private function render_session_page_inline() {
+        $session = get_query_var('session_data');
+        $session_id = get_query_var('session_id');
+        
+        if (!$session) {
+            wp_die('Session not found', 'Session Not Found', array('response' => 404));
+        }
+        
+        // Get site title and theme info for basic HTML structure
+        $site_title = get_bloginfo('name');
+        $theme_url = get_template_directory_uri();
+        
+        // Render minimal HTML page
+        ?>
+        <!DOCTYPE html>
+        <html <?php language_attributes(); ?>>
+        <head>
+            <meta charset="<?php bloginfo('charset'); ?>">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title><?php echo esc_html($session->event_name . ' - ' . $site_title); ?></title>
+            <?php wp_head(); ?>
+        </head>
+        <body class="session-page">
+            <div class="session-page-container">
+                <?php echo wp_kses_post($this->display_single_session()); ?>
             </div>
             <?php wp_footer(); ?>
         </body>
@@ -1278,5 +1532,256 @@ class Sched_Public {
         // Note: Individual query caches will expire automatically in 5 minutes
         // This prevents creating new "direct database call" warnings
         // by querying the options table for transient patterns
+    }
+
+    /**
+     * Display single session page
+     *
+     * @since    1.0.0
+     * @return   void
+     */
+    public function display_single_session() {
+        // Get session ID from URL
+        $session_id = $this->get_session_id_from_url();
+        
+        if (!$session_id) {
+            // Session not found, return 404
+            global $wp_query;
+            $wp_query->set_404();
+            status_header(404);
+            get_template_part(404);
+            exit();
+        }
+        
+        // Get session data
+        $session = $this->get_session_by_id($session_id);
+        
+        if (!$session) {
+            // Session not found in database, return 404
+            global $wp_query;
+            $wp_query->set_404();
+            status_header(404);
+            get_template_part(404);
+            exit();
+        }
+        
+        // Get speakers for this session
+        $speakers = $this->get_speakers_for_session($session_id);
+        
+        // Set page title
+        add_filter('wp_title', function($title) use ($session) {
+            return $session->event_name . ' | ' . get_bloginfo('name');
+        });
+        
+        add_filter('document_title_parts', function($title) use ($session) {
+            $title['title'] = $session->event_name;
+            return $title;
+        });
+        
+        // Prepare template data
+        $template_data = array(
+            'session' => $session,
+            'session_speakers' => $speakers,
+            'event_color' => $this->get_event_type_color($session->event_type)
+        );
+        
+        // Use the existing template system for proper variable passing
+        echo wp_kses_post($this->load_template('sched-single-session-display', $template_data));
+    }
+    
+    /**
+     * Get session ID from current URL
+     *
+     * @since    1.0.0
+     * @return   string|false Session ID or false if not found
+     */
+    private function get_session_id_from_url() {
+        // Check for session parameter first
+        if (isset($_GET['session']) && !empty($_GET['session'])) {
+            return sanitize_text_field($_GET['session']);
+        }
+        
+        // Check URL path for /sessions/{session_id} pattern
+        if (!isset($_SERVER['REQUEST_URI'])) {
+            return false;
+        }
+        
+        $request_uri = sanitize_text_field($_SERVER['REQUEST_URI']);
+        $path = wp_parse_url($request_uri, PHP_URL_PATH);
+        
+        // Remove query string and trailing slash
+        $path = rtrim($path, '/');
+        
+        // Match /sessions/{session_id} pattern
+        if (preg_match('#/sessions/([^/]+)$#', $path, $matches)) {
+            return sanitize_text_field($matches[1]);
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Get single session by ID
+     *
+     * @since    1.0.0
+     * @param    string $session_id The session ID
+     * @return   object|false Session data or false if not found
+     */
+    public function get_session_by_id($session_id) {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'sched_sessions';
+        $cache_key = 'sched_session_' . sanitize_key($session_id);
+        
+        // Try cache first
+        $session = wp_cache_get($cache_key, 'sched_plugin');
+        
+        if (false === $session) {
+            // Query database
+            $session = $wpdb->get_row($wpdb->prepare(
+                "SELECT * FROM $table_name WHERE event_id = %s LIMIT 1",
+                $session_id
+            ));
+            
+            if ($session) {
+                // Cache for 5 minutes
+                wp_cache_set($cache_key, $session, 'sched_plugin', 300);
+            }
+        }
+        
+        return $session;
+    }
+    
+    /**
+     * Get speakers for a session
+     *
+     * @since    1.0.0
+     * @param    string $session_id The session ID (event_key)
+     * @return   array Array of speaker objects
+     */
+    public function get_speakers_for_session($session_id) {
+        global $wpdb;
+        
+        $sessions_speakers_table = $wpdb->prefix . 'sched_sessions_speakers';
+        $speakers_table = $wpdb->prefix . 'sched_speakers';
+        $cache_key = 'sched_session_speakers_' . sanitize_key($session_id);
+        
+        // Try cache first
+        $speakers = wp_cache_get($cache_key, 'sched_plugin');
+        
+        if (false === $speakers) {
+            // Query speakers using the pivot table directly with session_id
+            // Since event_id in sessions table = session_id in pivot table
+            $speakers = $wpdb->get_results($wpdb->prepare(
+                "SELECT 
+                    ss.session_id,
+                    ss.speaker_username,
+                    ss.speaker_name,
+                    sp.speaker_company,
+                    sp.speaker_position,
+                    sp.speaker_location,
+                    sp.speaker_about,
+                    sp.speaker_url,
+                    sp.speaker_avatar,
+                    sp.speaker_featured
+                FROM $sessions_speakers_table ss
+                LEFT JOIN $speakers_table sp ON ss.speaker_username = sp.username
+                WHERE ss.session_id = %s
+                ORDER BY ss.speaker_name ASC",
+                $session_id
+            ));
+            
+            if (!$speakers) {
+                $speakers = array();
+            }
+            
+            // Cache for 5 minutes
+            wp_cache_set($cache_key, $speakers, 'sched_plugin', 300);
+        }
+        
+        return $speakers;
+    }
+    
+    /**
+     * Check if current request is for a single session
+     *
+     * @since    1.0.0
+     * @return   bool True if single session request
+     */
+    public function is_single_session_request() {
+        // Check for session parameter
+        if (isset($_GET['session']) && !empty($_GET['session'])) {
+            return true;
+        }
+        
+        // Check URL path for /sessions/{session_id} pattern
+        if (!isset($_SERVER['REQUEST_URI'])) {
+            return false;
+        }
+        
+        $request_uri = sanitize_text_field($_SERVER['REQUEST_URI']);
+        $path = wp_parse_url($request_uri, PHP_URL_PATH);
+        $path = rtrim($path, '/');
+        
+        return (bool) preg_match('#/sessions/[^/]+$#', $path);
+    }
+    
+    /**
+     * Get URL for speaker page
+     *
+     * @since    1.0.0
+     * @param    string $username Speaker username
+     * @return   string Speaker page URL
+     */
+    public function get_speaker_page_url($username) {
+        $base_path = $this->get_speakers_base_path();
+        return site_url('/' . $base_path . '/' . urlencode($username));
+    }
+    
+    /**
+     * Get URL for sessions page
+     *
+     * @since    1.0.0
+     * @return   string Sessions page URL
+     */
+    public function get_sessions_page_url() {
+        // Try to find the page with sessions shortcode
+        $sessions_page = $this->find_page_with_shortcode('[sched_sessions', '[wp_sched_sessions');
+        
+        if ($sessions_page) {
+            return get_permalink($sessions_page);
+        }
+        
+        // Fallback to dynamic base path
+        return site_url('/' . $this->get_sessions_base_path() . '/');
+    }
+    
+    /**
+     * Find template file with theme override support
+     *
+     * @since    1.0.0
+     * @param    string $template_name The template filename
+     * @return   string|false Template path or false if not found
+     */
+    private function find_template($template_name) {
+        // Check if theme has override
+        $theme_template = locate_template(array(
+            'sched-templates/' . $template_name,
+            'sched/' . $template_name,
+            $template_name
+        ));
+        
+        if ($theme_template) {
+            return $theme_template;
+        }
+        
+        // Use plugin template
+        $plugin_template = plugin_dir_path(__FILE__) . 'partials/' . $template_name;
+        
+        if (file_exists($plugin_template)) {
+            return $plugin_template;
+        }
+        
+        return false;
     }
 }

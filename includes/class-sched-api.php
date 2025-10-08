@@ -1,6 +1,4 @@
 <?php
-
-// Ensure WordPress functions are available if running outside WP context
 if (!function_exists('get_option')) {
     if (defined('ABSPATH')) {
         require_once(ABSPATH . 'wp-load.php');
@@ -10,15 +8,12 @@ if (!function_exists('is_wp_error')) {
     require_once(ABSPATH . 'wp-includes/functions.php');
 }
 
-/**
- * The API class for handling Sched.com integration based on wp-sched.php
- */
 class Sched_API {
 
     private $api_key;
     private $conference_url;
     private $base_url;
-    private $rate_limit_max = 25; // Conservative limit under 30/minute
+    private $rate_limit_max = 25;
     private $rate_limit_window = 60; // 1 minute in seconds
 
     public function __construct() {
@@ -152,15 +147,15 @@ class Sched_API {
         
         // Only truncate if tables exist
         if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $wpdb->prefix . 'sched_sessions')) == $wpdb->prefix . 'sched_sessions') {
-            $wpdb->query($wpdb->prepare("DELETE FROM {$sessions_table}"));
+            $wpdb->query("DELETE FROM {$sessions_table}");
         }
         
         if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $wpdb->prefix . 'sched_speakers')) == $wpdb->prefix . 'sched_speakers') {
-            $wpdb->query($wpdb->prepare("DELETE FROM {$speakers_table}"));
+            $wpdb->query("DELETE FROM {$speakers_table}");
         }
         
         if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $wpdb->prefix . 'sched_sessions_speakers')) == $wpdb->prefix . 'sched_sessions_speakers') {
-            $wpdb->query($wpdb->prepare("DELETE FROM {$sessions_speakers_table}"));
+            $wpdb->query("DELETE FROM {$sessions_speakers_table}");
         }
     }
 
@@ -185,8 +180,6 @@ class Sched_API {
         if (function_exists('wp_cache_flush')) {
             wp_cache_flush();
         }
-        
-        error_log('SCHED DEBUG: All plugin caches cleared after sync');
     }
 
     /**
@@ -325,7 +318,7 @@ class Sched_API {
             dbDelta($sessions_sql);
         } else {
             $sessions_table_escaped = esc_sql($sessions_table_name);
-            $wpdb->query($wpdb->prepare("DELETE FROM {$sessions_table_escaped}"));
+            $wpdb->query("DELETE FROM {$sessions_table_escaped}");
         }
 
         // Create speakers table or truncate if exists
@@ -349,7 +342,7 @@ class Sched_API {
             dbDelta($speakers_sql);
         } else {
             $speakers_table_escaped = esc_sql($speakers_table_name);
-            $wpdb->query($wpdb->prepare("DELETE FROM {$speakers_table_escaped}"));
+            $wpdb->query("DELETE FROM {$speakers_table_escaped}");
         }
 
         // Create sessions-speakers pivot table or truncate if exists
@@ -366,7 +359,7 @@ class Sched_API {
             dbDelta($sessions_speakers_sql);
         } else {
             $sessions_speakers_table_escaped = esc_sql($sessions_speakers_table_name);
-            $wpdb->query($wpdb->prepare("DELETE FROM {$sessions_speakers_table_escaped}"));
+            $wpdb->query("DELETE FROM {$sessions_speakers_table_escaped}");
         }
     }
 
@@ -549,11 +542,9 @@ class Sched_API {
         if ($featured_speakers && $all_speakers) {
             if (count($featured_speakers) === count($all_speakers)) {
                 // Featured API returned same count as all speakers - means no speakers are actually featured
-                error_log('SCHED DEBUG: Featured API returned all speakers (' . count($featured_speakers) . ') - no actual featured speakers in Sched.com');
                 $actual_featured_speakers = array();
             } else {
                 // There are actual featured speakers (different counts)
-                error_log('SCHED DEBUG: Found ' . count($featured_speakers) . ' featured speakers out of ' . count($all_speakers) . ' total speakers');
                 $actual_featured_speakers = $featured_speakers;
             }
         }
